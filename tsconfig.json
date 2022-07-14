@@ -1,9 +1,11 @@
-// prettier-ignore
 {
   "extends": "@tsconfig/react-native/tsconfig.json",
   "compilerOptions": {
+    "baseUrl": "src",
+    "module": "ESNext",
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
     "isolatedModules": true,
     "jsx": "react-native",
@@ -11,6 +13,11 @@
     "moduleResolution": "node",
     "noEmit": true,
     "strict": true,
-    "target": "esnext"
-  }
+    "target": "esnext",
+    "paths": {
+      "@hooks/*": ["hooks/*"]
+    }
+  },
+  "include": ["./src/**/*"],
+  "exclude": ["build", "node_modules", "public"]
 }
