@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const AsyncStorageHook = () => {
+const AsyncStorageRN = () => {
   // For string value
   const setString = async (dataKey: string, value: string) => {
     try {
@@ -58,4 +58,4 @@ const AsyncStorageHook = () => {
   return {setString, getString, set, get, remove} as const;
 };
 
-export {AsyncStorageHook};
+export {AsyncStorageRN};

@@ -15,7 +15,8 @@
     "strict": true,
     "target": "esnext",
     "paths": {
-      "@hooks/*": ["hooks/*"]
+      "@hooks": ["hooks"],
+      "@managers*": ["managers"],
     }
   },
   "include": ["./src/**/*"],

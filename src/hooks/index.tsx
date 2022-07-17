@@ -1,1 +1,0 @@
-export * as default from './AsyncStorage/AsyncStorage';
