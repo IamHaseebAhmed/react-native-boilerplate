@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AsyncStorageRN = () => {
   // For string value
+
   const setString = async (dataKey: string, value: string) => {
     try {
       await AsyncStorage.setItem(dataKey, value);

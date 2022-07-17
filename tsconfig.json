@@ -15,10 +15,17 @@
     "strict": true,
     "target": "esnext",
     "paths": {
+      "@assets": ["assets"], 
+      "@components": ["components"], 
       "@hooks": ["hooks"],
       "@managers*": ["managers"],
+      "@navigators*": ["navigators"],
+      "@screens": ["screens"],
+      "@services": ["services"],
+      "@themes": ["themes"],
+      "@utils": ["utils"],
     }
   },
   "include": ["./src/**/*"],
-  "exclude": ["build", "node_modules", "public"]
+  "exclude": ["build", "node_modules", "public"],
 }

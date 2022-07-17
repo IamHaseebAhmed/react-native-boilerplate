@@ -3,9 +3,13 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "start": "react-native start",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
-    "start": "react-native start",
+    "android-dev": "ENVFILE=.env.development react-native run-android",
+    "android-prod": "ENVFILE=.env.production react-native run-android",
+    "android-dev-release": "cd android && ENVFILE=.env.development ./gradlew assembleRelease",
+    "android-prod-release": "cd android && ENVFILE=.env.production ./gradlew assembleRelease",
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
@@ -16,6 +20,7 @@
     "@react-navigation/native-stack": "^6.7.0",
     "react": "18.0.0",
     "react-native": "0.69.1",
+    "react-native-config": "^1.4.6",
     "react-native-device-info": "^10.0.0",
     "react-native-fast-image": "^8.5.11",
     "react-native-gesture-handler": "^2.5.0",

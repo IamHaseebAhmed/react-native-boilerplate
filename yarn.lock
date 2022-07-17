@@ -6163,6 +6163,11 @@
     "jscodeshift" "^0.13.1"
     "nullthrows" "^1.1.1"
 
+"react-native-config@^1.4.6":
+  "integrity" "sha512-cSLdOfva2IPCxh6HjHN1IDVW9ratAvNnnAUx6ar2Byvr8KQU7++ysdFYPaoNVuJURuYoAKgvjab8ZcnwGZIO6Q=="
+  "resolved" "https://registry.npmjs.org/react-native-config/-/react-native-config-1.4.6.tgz"
+  "version" "1.4.6"
+
 "react-native-device-info@^10.0.0":
   "integrity" "sha512-yZ/JEcCxYp0rwsRcS3DFZ0PQhRmQOrrt6YO/aiq368MH6kb0uZyTiyTqYLXM71peHaB4duI6QjRWjAYubtlliA=="
   "resolved" "https://registry.npmjs.org/react-native-device-info/-/react-native-device-info-10.0.0.tgz"
