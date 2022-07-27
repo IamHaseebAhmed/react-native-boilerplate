@@ -1,100 +1,42 @@
-// import {requestSend} from './RequestSend';
-// import {Router, UserInfoStorage} from 'Factory';
-// import {generateApiError, generateNetworkError} from 'CustomError/genrateError';
 import { Config } from '@managers';
 
-// const BaseUrl = {
-//   api: 'https://staging.api.nooberly.com/',
-//   notification: 'https://staging.notifications.nooberly.com/',
-// };
+var BASE_URL = Config.BASE_URL;
 
-const BASE_URL = Config.BASE_URL;
+enum CONTENT_TYPE {
+  UrlEncoded = 1,
+  JsonData = 2,
+  TextPlain = 3
+}
 
-const MainService = () => {
+class MainService {
 
-  const toFormUrlEncoded = async (param: object) => {
-    let promise = new Promise(async (resolve, reject) => {
-      const formBody = Object.keys(param)
-        .map((key: string) => encodeURIComponent(key) + '=' + encodeURIComponent(param[key]))
-        .join('&');
-      return resolve(formBody);
-    });
-    return promise;
+  constructor(accessToken: string, refreshToken: string) {
+    accessToken = accessToken;
+    refreshToken = refreshToken;
   }
 
-  const getApiConfig = async (api: string, header: any, baseUrlType: number, contentType: number, isLoggedIn: boolean) => {
-    let url = BASE_URL + api, token, Content_Type = 'application/x-www-form-urlencoded';
+  async getUrlEncodedApi(data: any) {
+    let api = Object.keys(data).map(key => encodeURIComponent(key) + "=" + encodeURIComponent(data[key])).join("&");
+    return api;
+  }
+
+  async get(api: string, data: object, isLoggedIn: boolean, contentType: CONTENT_TYPE) {
+
+    let url: string, encodedData: string, reqHeader: any;
+
     if (contentType == 1) {
-      Content_Type = 'application/json';
+      encodedData = await this.getUrlEncodedApi(data);
+      url = BASE_URL += '?' + encodedData
+      reqHeader['Content-Type'] = 'application/x-www-form-urlencoded';
     }
+
     if (contentType == 2) {
-      Content_Type = 'multipart/form-data';
-    }
-    let requestHeader = {
-      Accept: 'application/json',
-      'Content-Type': Content_Type,
-    };
-    if (header) {
-      requestHeader = Object.assign(requestHeader, header);
-    }
-    if (baseUrlType === 1) {
-      url = BASE_URL + api;
-    }
-    if (baseUrlType === 2) {
-      url = api;
+      encodedData = JSON.stringify(data);
+      reqHeader['Content-Type'] = 'application/json';
     }
 
     if (isLoggedIn) {
-      let response = "" // await UserInfoStorage.getToken();
-      if (response) {
-        requestHeader = Object.assign(requestHeader, {
-          Authorization: 'Bearer ' + response,
-        });
-      }
-      else {
-        generateApiError(requestHeader, { status: 402 }, url, null, 'authorization', null);
-        return;
-      }
-    }
-    return {
-      header: requestHeader,
-      url: url,
-    };
-  }
-
-  let get = async (api: string, param: object = {}, isLoggedIn: boolean = false, contentType: number = 0, dataFormType: any = 0, baseUrlType: number = 0, header: any = {}) => {
-    try {
-      let url, apiConfig, encodedData;
-
-      apiConfig = await getApiConfig(api, header, baseUrlType, contentType, isLoggedIn);
-      url = apiConfig?.url;
-
-      if (param) {
-        encodedData = await toFormUrlEncoded(param);
-        url = apiConfig.url + '?' + encodedData;
-      }
-
-      let response = await requestSend(url, null, apiConfig.header, 'GET');
-      return response;
-    } catch (error) {
-      console.log(e);
-      if ((e && e.status == 401) || (e && e.status == 402)) {
-        let newResponse = await this.refreshToken(
-          'get',
-          api,
-          param,
-          isLogin,
-          contentType,
-          dataFormType,
-          baseUrlType,
-          header,
-        );
-        if (newResponse) {
-          return newResponse;
-        }
-        throw e;
-      }
-      throw e;
+      reqHeader['Bearer ']
     }
   }
 }
