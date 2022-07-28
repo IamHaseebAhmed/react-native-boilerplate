@@ -8,6 +8,14 @@ enum CONTENT_TYPE {
   TextPlain = 3
 }
 
+// enum REQUEST_METHOD {
+//   get = 1,
+//   post = 2,
+//   put = 3,
+//   patch = 4,
+//   delete = 5
+// }
+
 class MainService {
 
   constructor(accessToken: string, refreshToken: string) {
@@ -20,24 +28,31 @@ class MainService {
     return api;
   }
 
+  async getAccessToken() {
+    return ""
+  }
+
   async get(api: string, data: object, isLoggedIn: boolean, contentType: CONTENT_TYPE) {
 
-    let url: string, encodedData: string, reqHeader: any;
+    let url: string, encodedData: string, reqHeader: any, accessToken;
 
     if (contentType == 1) {
       encodedData = await this.getUrlEncodedApi(data);
-      url = BASE_URL += '?' + encodedData
+      url = BASE_URL += '?' + encodedData;
       reqHeader['Content-Type'] = 'application/x-www-form-urlencoded';
     }
 
-    if (contentType == 2) {
-      encodedData = JSON.stringify(data);
-      reqHeader['Content-Type'] = 'application/json';
-    }
+    // if (contentType == 2) {
+    //   encodedData = JSON.stringify(data);
+    //   reqHeader['Content-Type'] = 'application/json';
+    // }
 
     if (isLoggedIn) {
-      reqHeader['Bearer ']
+      accessToken = await this.getAccessToken();
+      reqHeader['Authorization'] = 'Bearer ' + accessToken;
     }
+
+    let response = this.sendRequest('GET', url, encodedData, reqHeader)
   }
 }
 
