@@ -159,24 +159,16 @@
 //   }
 // }
 
-enum REQUEST_METHOD {
+export enum REQUEST_METHOD {
   get = 1,
   post = 2,
   put = 3,
   patch = 4,
-  delete = 5
+  delete = 5,
 }
 
 interface RequestHeader {
-  Authorization?: String 
+  Authorization?: String
 }
 
-export const requestSend = (method: REQUEST_METHOD, url: string, body: object, header: ) => {
-
-}
-
-
-
-
-
-
+export const requestSend = (method: REQUEST_METHOD, url: string, body: object, header: any) => {}

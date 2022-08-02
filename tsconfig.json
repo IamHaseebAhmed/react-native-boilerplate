@@ -3,9 +3,8 @@
   "compilerOptions": {
     "baseUrl": "src",
     "module": "ESNext",
-    "allowJs": true,
+    "allowJs": false,
     "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
     "isolatedModules": true,
     "jsx": "react-native",

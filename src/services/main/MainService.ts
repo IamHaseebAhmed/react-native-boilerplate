@@ -1,31 +1,33 @@
-import { Config } from '@managers';
+import { Config } from "@managers"
+import { requestSend } from "./RequestSend"
 
-var BASE_URL = Config.BASE_URL;
+var BASE_URL = Config.BASE_URL
 
 enum CONTENT_TYPE {
   UrlEncoded = 1,
   JsonData = 2,
-  TextPlain = 3
+  TextPlain = 3,
 }
 
-// enum REQUEST_METHOD {
-//   get = 1,
-//   post = 2,
-//   put = 3,
-//   patch = 4,
-//   delete = 5
-// }
+export enum REQUEST_METHOD {
+  get = 1,
+  post = 2,
+  put = 3,
+  patch = 4,
+  delete = 5,
+}
 
 class MainService {
-
   constructor(accessToken: string, refreshToken: string) {
-    accessToken = accessToken;
-    refreshToken = refreshToken;
+    accessToken = accessToken
+    refreshToken = refreshToken
   }
 
   async getUrlEncodedApi(data: any) {
-    let api = Object.keys(data).map(key => encodeURIComponent(key) + "=" + encodeURIComponent(data[key])).join("&");
-    return api;
+    let api = Object.keys(data)
+      .map((key) => encodeURIComponent(key) + "=" + encodeURIComponent(data[key]))
+      .join("&")
+    return api
   }
 
   async getAccessToken() {
@@ -33,13 +35,12 @@ class MainService {
   }
 
   async get(api: string, data: object, isLoggedIn: boolean, contentType: CONTENT_TYPE) {
-
-    let url: string, encodedData: string, reqHeader: any, accessToken;
+    let url: string, encodedData: string, reqHeader: any, accessToken
 
     if (contentType == 1) {
-      encodedData = await this.getUrlEncodedApi(data);
-      url = BASE_URL += '?' + encodedData;
-      reqHeader['Content-Type'] = 'application/x-www-form-urlencoded';
+      encodedData = await this.getUrlEncodedApi(data)
+      url = BASE_URL += "?" + encodedData
+      reqHeader["Content-Type"] = "application/x-www-form-urlencoded"
     }
 
     // if (contentType == 2) {
@@ -48,11 +49,11 @@ class MainService {
     // }
 
     if (isLoggedIn) {
-      accessToken = await this.getAccessToken();
-      reqHeader['Authorization'] = 'Bearer ' + accessToken;
+      accessToken = await this.getAccessToken()
+      reqHeader["Authorization"] = "Bearer " + accessToken
     }
 
-    let response = this.sendRequest('GET', url, encodedData, reqHeader)
+    let response = requestSend("GET", url, encodedData, reqHeader)
   }
 }
 
@@ -67,31 +68,20 @@ class Service {
     header: any = {},
   ) {
     try {
-      let url, setCofig, encodedData;
-      setCofig = await this.setCofig(
-        api,
-        header,
-        baseUrlType,
-        contentType,
-        isLogin,
-      );
-      url = setCofig.url;
+      let url, setCofig, encodedData
+      setCofig = await this.setCofig(api, header, baseUrlType, contentType, isLogin)
+      url = setCofig.url
       if (param) {
-        encodedData = await this.toFormUrlEncoded(param);
-        url = setCofig.url += '?' + encodedData;
+        encodedData = await this.toFormUrlEncoded(param)
+        url = setCofig.url += "?" + encodedData
       }
-      let response = await requestSend(
-        setCofig.url,
-        null,
-        setCofig.header,
-        'GET',
-      );
-      return response;
+      let response = await requestSend(setCofig.url, null, setCofig.header, "GET")
+      return response
     } catch (e) {
-      console.log(e);
+      console.log(e)
       if ((e && e.status == 401) || (e && e.status == 402)) {
         let newResponse = await this.refreshToken(
-          'get',
+          "get",
           api,
           param,
           isLogin,
@@ -99,13 +89,13 @@ class Service {
           dataFormType,
           baseUrlType,
           header,
-        );
+        )
         if (newResponse) {
-          return newResponse;
+          return newResponse
         }
-        throw e;
+        throw e
       }
-      throw e;
+      throw e
     }
   }
 
@@ -119,36 +109,22 @@ class Service {
     header: any = {},
   ) {
     try {
-      let body, setCofig;
-      setCofig = await this.setCofig(
-        api,
-        header,
-        baseUrlType,
-        contentType,
-        isLogin,
-      );
-      if (
-        (dataFormType == 0 && contentType == 0) ||
-        (!dataFormType && !contentType)
-      ) {
-        body = await this.toFormUrlEncoded(param);
+      let body, setCofig
+      setCofig = await this.setCofig(api, header, baseUrlType, contentType, isLogin)
+      if ((dataFormType == 0 && contentType == 0) || (!dataFormType && !contentType)) {
+        body = await this.toFormUrlEncoded(param)
       } else if (dataFormType == 1) {
-        body = await this.serializeJSON(param);
+        body = await this.serializeJSON(param)
       } else if (dataFormType == 2) {
-        body = JSON.stringify(param);
+        body = JSON.stringify(param)
       }
-      let response = await requestSend(
-        setCofig.url,
-        body,
-        setCofig.header,
-        'POST',
-      );
-      return response;
+      let response = await requestSend(setCofig.url, body, setCofig.header, "POST")
+      return response
     } catch (e) {
-      console.log("ERROR :: ", e);
+      console.log("ERROR :: ", e)
       if ((e && e.status == 401) || (e && e.status == 402)) {
         let newResponse = await this.refreshToken(
-          'post',
+          "post",
           api,
           param,
           isLogin,
@@ -156,13 +132,13 @@ class Service {
           dataFormType,
           baseUrlType,
           header,
-        );
+        )
         if (newResponse) {
-          return newResponse;
+          return newResponse
         }
-        throw e;
+        throw e
       }
-      throw e;
+      throw e
     }
   }
   async patch(
@@ -175,35 +151,21 @@ class Service {
     header: any = {},
   ) {
     try {
-      let body, setCofig;
-      setCofig = await this.setCofig(
-        api,
-        header,
-        baseUrlType,
-        contentType,
-        isLogin,
-      );
-      if (
-        (dataFormType == 0 && contentType == 0) ||
-        (!dataFormType && !contentType)
-      ) {
-        body = await this.toFormUrlEncoded(param);
+      let body, setCofig
+      setCofig = await this.setCofig(api, header, baseUrlType, contentType, isLogin)
+      if ((dataFormType == 0 && contentType == 0) || (!dataFormType && !contentType)) {
+        body = await this.toFormUrlEncoded(param)
       } else if (dataFormType == 1) {
-        body = await this.serializeJSON(param);
+        body = await this.serializeJSON(param)
       } else if (dataFormType == 2) {
-        body = JSON.stringify(param);
+        body = JSON.stringify(param)
       }
-      let response = await requestSend(
-        setCofig.url,
-        body,
-        setCofig.header,
-        'PATCH',
-      );
-      return response;
+      let response = await requestSend(setCofig.url, body, setCofig.header, "PATCH")
+      return response
     } catch (e) {
       if ((e && e.status == 401) || (e && e.status == 402)) {
         let newResponse = await this.refreshToken(
-          'patch',
+          "patch",
           api,
           param,
           isLogin,
@@ -211,13 +173,13 @@ class Service {
           dataFormType,
           baseUrlType,
           header,
-        );
+        )
         if (newResponse) {
-          return newResponse;
+          return newResponse
         }
-        throw e;
+        throw e
       }
-      throw e;
+      throw e
     }
   }
   async delete(
@@ -230,35 +192,21 @@ class Service {
     header: any = {},
   ) {
     try {
-      let body, setCofig;
-      setCofig = await this.setCofig(
-        api,
-        header,
-        baseUrlType,
-        contentType,
-        isLogin,
-      );
-      if (
-        (dataFormType == 0 && contentType == 0) ||
-        (!dataFormType && !contentType)
-      ) {
-        body = await this.toFormUrlEncoded(param);
+      let body, setCofig
+      setCofig = await this.setCofig(api, header, baseUrlType, contentType, isLogin)
+      if ((dataFormType == 0 && contentType == 0) || (!dataFormType && !contentType)) {
+        body = await this.toFormUrlEncoded(param)
       } else if (dataFormType == 1) {
-        body = await this.serializeJSON(param);
+        body = await this.serializeJSON(param)
       } else if (dataFormType == 2) {
-        body = JSON.stringify(param);
+        body = JSON.stringify(param)
       }
-      let response = await requestSend(
-        setCofig.url,
-        body,
-        setCofig.header,
-        'DELETE',
-      );
-      return response;
+      let response = await requestSend(setCofig.url, body, setCofig.header, "DELETE")
+      return response
     } catch (e) {
       if ((e && e.status == 401) || (e && e.status == 402)) {
         let newResponse = await this.refreshToken(
-          'delete',
+          "delete",
           api,
           param,
           isLogin,
@@ -266,13 +214,13 @@ class Service {
           dataFormType,
           baseUrlType,
           header,
-        );
+        )
         if (newResponse) {
-          return newResponse;
+          return newResponse
         }
-        throw e;
+        throw e
       }
-      throw e;
+      throw e
     }
   }
   async put(
@@ -285,36 +233,22 @@ class Service {
     header: any = {},
   ) {
     try {
-      let body, setCofig;
-      setCofig = await this.setCofig(
-        api,
-        header,
-        baseUrlType,
-        contentType,
-        isLogin,
-      );
-      if (
-        (dataFormType == 0 && contentType == 0) ||
-        (!dataFormType && !contentType)
-      ) {
-        body = await this.toFormUrlEncoded(param);
+      let body, setCofig
+      setCofig = await this.setCofig(api, header, baseUrlType, contentType, isLogin)
+      if ((dataFormType == 0 && contentType == 0) || (!dataFormType && !contentType)) {
+        body = await this.toFormUrlEncoded(param)
       } else if (dataFormType == 1) {
-        body = await this.serializeJSON(param);
+        body = await this.serializeJSON(param)
       } else if (dataFormType == 2) {
-        body = JSON.stringify(param);
+        body = JSON.stringify(param)
       }
       // console.log(body);
-      let response = await requestSend(
-        setCofig.url,
-        body,
-        setCofig.header,
-        'PUT',
-      );
-      return response;
+      let response = await requestSend(setCofig.url, body, setCofig.header, "PUT")
+      return response
     } catch (e) {
       if ((e && e.status == 401) || (e && e.status == 402)) {
         let newResponse = await this.refreshToken(
-          'put',
+          "put",
           api,
           param,
           isLogin,
@@ -322,39 +256,28 @@ class Service {
           dataFormType,
           baseUrlType,
           header,
-        );
+        )
         if (newResponse) {
-          return newResponse;
+          return newResponse
         }
-        throw e;
+        throw e
       }
-      throw e;
+      throw e
     }
   }
-  async refreshToken(
-    methond,
-    api,
-    param,
-    isLogin,
-    contentType,
-    dataFormType,
-    baseUrlType,
-    header,
-  ) {
+  async refreshToken(methond, api, param, isLogin, contentType, dataFormType, baseUrlType, header) {
     try {
-      let refreshToken = await UserInfoStorage.getRefreshToken();
+      let refreshToken = await UserInfoStorage.getRefreshToken()
       if (refreshToken) {
-        let url = 'api/v1/user/refresh-access-token';
-        let para = { refresh_token: refreshToken };
-        let response = await this.post(url, para, false, 1, 2);
+        let url = "api/v1/user/refresh-access-token"
+        let para = { refresh_token: refreshToken }
+        let response = await this.post(url, para, false, 1, 2)
         // console.log('refreshToken>>>>>>>>>>>>>>>>>>>>>>>>', response);
 
         if (response?.data?.result?.access_token) {
-          let object = await UserInfoStorage.setRefreshTokenData(
-            response.data.result,
-          );
-          let newResponse = null;
-          if (methond == 'get') {
+          let object = await UserInfoStorage.setRefreshTokenData(response.data.result)
+          let newResponse = null
+          if (methond == "get") {
             newResponse = await this.get(
               api,
               param,
@@ -363,9 +286,9 @@ class Service {
               dataFormType,
               baseUrlType,
               header,
-            );
+            )
           }
-          if (methond == 'post') {
+          if (methond == "post") {
             newResponse = await this.post(
               api,
               param,
@@ -374,9 +297,9 @@ class Service {
               dataFormType,
               baseUrlType,
               header,
-            );
+            )
           }
-          if (methond == 'patch') {
+          if (methond == "patch") {
             newResponse = await this.patch(
               api,
               param,
@@ -385,9 +308,9 @@ class Service {
               dataFormType,
               baseUrlType,
               header,
-            );
+            )
           }
-          if (methond == 'delete') {
+          if (methond == "delete") {
             newResponse = await this.delete(
               api,
               param,
@@ -396,9 +319,9 @@ class Service {
               dataFormType,
               baseUrlType,
               header,
-            );
+            )
           }
-          if (methond == 'put') {
+          if (methond == "put") {
             newResponse = await this.put(
               api,
               param,
@@ -407,87 +330,76 @@ class Service {
               dataFormType,
               baseUrlType,
               header,
-            );
+            )
           }
-          return newResponse;
+          return newResponse
         }
       }
-      return false;
+      return false
     } catch (e) {
-      console.log('refreshToken>>>>>>>>>>>>>>>>>>>>>>>>', e);
+      console.log("refreshToken>>>>>>>>>>>>>>>>>>>>>>>>", e)
 
-      console.log(e);
-      return false;
+      console.log(e)
+      return false
     }
   }
   // sets configs e.g header, contentType
   async setCofig(api, header, baseUrlType, contentType, isLogin) {
     let url = BaseUrl.api + api,
       token,
-      Content_Type = 'application/x-www-form-urlencoded';
+      Content_Type = "application/x-www-form-urlencoded"
     if (contentType == 1) {
-      Content_Type = 'application/json';
+      Content_Type = "application/json"
     }
     if (contentType == 2) {
-      Content_Type = 'multipart/form-data';
+      Content_Type = "multipart/form-data"
     }
     var requestHeader = {
-      Accept: 'application/json',
-      'Content-Type': Content_Type,
-    };
+      Accept: "application/json",
+      "Content-Type": Content_Type,
+    }
     if (header) {
-      requestHeader = Object.assign(requestHeader, header);
+      requestHeader = Object.assign(requestHeader, header)
     }
     if (baseUrlType === 1) {
-      url = BaseUrl.notification + api;
+      url = BaseUrl.notification + api
     }
     if (baseUrlType === 2) {
-      url = api;
+      url = api
     }
 
     if (isLogin) {
-      let response = await UserInfoStorage.getToken();
+      let response = await UserInfoStorage.getToken()
       if (response) {
         requestHeader = Object.assign(requestHeader, {
-          Authorization: 'Bearer ' + response,
-        });
+          Authorization: "Bearer " + response,
+        })
       } else {
-        generateApiError(
-          requestHeader,
-          { status: 402 },
-          url,
-          null,
-          'authorization',
-          null,
-        );
-        return;
+        generateApiError(requestHeader, { status: 402 }, url, null, "authorization", null)
+        return
       }
     }
     return {
       header: requestHeader,
       url: url,
-    };
+    }
   }
   async toFormUrlEncoded(param) {
     let promise = new Promise(async (resolve, reject) => {
       const formBody = Object.keys(param)
-        .map(
-          key => encodeURIComponent(key) + '=' + encodeURIComponent(param[key]),
-        )
-        .join('&');
-      return resolve(formBody);
-    });
-    return promise;
+        .map((key) => encodeURIComponent(key) + "=" + encodeURIComponent(param[key]))
+        .join("&")
+      return resolve(formBody)
+    })
+    return promise
   }
   async serializeJSON(data) {
     return Object.keys(data)
       .map(function (keyName) {
-        return (
-          encodeURIComponent(keyName) + '=' + encodeURIComponent(data[keyName])
-        );
+        return encodeURIComponent(keyName) + "=" + encodeURIComponent(data[keyName])
       })
-      .join('&');
+      .join("&")
   }
 }
 
-module.exports = { Service: new Service() };
+module.exports = { Service: new Service() }
